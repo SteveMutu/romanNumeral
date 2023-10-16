@@ -1,0 +1,105 @@
+import java.util.Map;
+import java.util.HashMap;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+public class RomanNumeral {
+    private static Map<Character, Integer> map;
+
+    static {
+        map = new HashMap<Character, Integer>() {{
+            put('I', 1);
+            put('V', 5);
+            put('X', 10);
+            put('L', 50);
+            put('C', 100);
+            put('D', 500);
+            put('M', 1000);
+        }};
+    }
+
+    public int romanToInt(String s) {
+        int convertedNumber = 0;
+        int prevValue = 0;
+    
+        for (int i = s.length() - 1; i >= 0; i--) {
+            char currentChar = s.charAt(i);
+            if (!map.containsKey(currentChar)) {
+                // Invalid character in the Roman numeral
+                throw new IllegalArgumentException("Invalid Roman numeral: " + currentChar);
+            }
+    
+            int currentNumber = map.get(currentChar);
+    
+            if (currentNumber < prevValue) {
+                convertedNumber -= currentNumber;
+            } else {
+                convertedNumber += currentNumber;
+            }
+    
+            prevValue = currentNumber;
+        }
+    
+        return convertedNumber;
+    }
+    
+
+    // JUnit test cases
+    @Test
+    public void testRomanToInt() {
+        // Single Letters: I, V, X, L, C, D, M
+        assertEquals(1, romanToInt("I"));
+        assertEquals(5, romanToInt("V"));
+        assertEquals(10, romanToInt("X"));
+        assertEquals(50, romanToInt("L"));
+        assertEquals(100, romanToInt("C"));
+        assertEquals(500, romanToInt("D"));
+        assertEquals(1000, romanToInt("M"));
+
+        // Many Letters: XI
+        assertEquals(11, romanToInt("XI"));
+
+        // Subtractive notation (SN): IV
+        assertEquals(4, romanToInt("IV"));
+
+        // With and without SN: XIV, XVI
+        assertEquals(14, romanToInt("XIV"));
+        assertEquals(16, romanToInt("XVI"));
+
+        // Repetition: II
+        assertEquals(2, romanToInt("II"));
+
+        // First number: I
+        assertEquals(1, romanToInt("I"));
+
+        // Invalid Letter: Z
+        try {
+            romanToInt("Z");
+            fail("Expected an IllegalArgumentException to be thrown for 'Z'");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid Roman numeral: Z", e.getMessage());
+        }
+
+        // Invalid and valid Letter: XIZ
+        try {
+            romanToInt("XIZ");
+            fail("Expected an IllegalArgumentException to be thrown for 'XIZ'");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid Roman numeral: Z", e.getMessage());
+        }
+
+        // Not Valid: VV
+        try {
+            romanToInt("VV");
+        } catch (IllegalArgumentException e) {
+            // This catch block will catch the exception and prevent the test from failing
+            assertEquals("Invalid Roman numeral: V", e.getMessage());
+        }
+
+    }
+
+    public static void main(String[] args) {
+        org.junit.runner.JUnitCore.main("RomanNumeral");
+    }
+}
